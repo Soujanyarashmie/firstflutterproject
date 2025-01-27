@@ -1,4 +1,5 @@
 import 'package:first_project/homepage.dart';
+import 'package:first_project/signup.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,9 +11,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+      home: LoginPage(),
     );
   }
 }
@@ -21,6 +22,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -28,30 +30,35 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final Set<String> validUsers = {
+    'soujanyamohan00@gmail.com',
+    'sanjay@gmail.com',
+  };
+
   void _login() {
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    final validUsers = {
-      'soujanyamohan00@gmail.com': 'Soujanya',
-      'sanjay@gmail.com': 'Sanjay',
-    };
-
-    if (validUsers.containsKey(username) && password == '1234') {
+    if (validUsers.contains(username) && password == '1234') {
       // Navigate to HomePage with the user's name
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(userName: validUsers[username]!),
+          builder: (context) => HomePage(userName: username),
         ),
       );
     } else {
-      // Display error SnackBar
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid username or password!'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUp(
+            userName: username,
+            addUserCallback: (newUser) {
+              setState(() {
+                validUsers.add(newUser);
+              });
+            },
+          ),
         ),
       );
     }
@@ -61,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
     // Navigate to HomePage as a guest
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) =>  HomePage(userName: 'Guest')),
+      MaterialPageRoute(builder: (context) => const HomePage(userName: 'Guest')),
     );
   }
 
@@ -126,5 +133,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-
